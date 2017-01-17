@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{BC02
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.Services", "Libraries\Sus.Base.Services\Sus.Base.Services.xproj", "{12F5F746-2725-45BD-A1C4-FC34CE329AAB}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.General", "Libraries\Sus.Base.General\Sus.Base.General.xproj", "{02B83385-9E0E-48F1-9B12-58BF67B76C71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{12F5F746-2725-45BD-A1C4-FC34CE329AAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12F5F746-2725-45BD-A1C4-FC34CE329AAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12F5F746-2725-45BD-A1C4-FC34CE329AAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02B83385-9E0E-48F1-9B12-58BF67B76C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02B83385-9E0E-48F1-9B12-58BF67B76C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02B83385-9E0E-48F1-9B12-58BF67B76C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02B83385-9E0E-48F1-9B12-58BF67B76C71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +73,6 @@ Global
 		{E53C1CC8-288A-4DB8-B011-985E79A5F5CD} = {A205FF4A-2DEE-4E8F-AD88-2CEE5F2955F2}
 		{D109D51C-5487-466D-B3CF-8CCF5E5DAE46} = {A205FF4A-2DEE-4E8F-AD88-2CEE5F2955F2}
 		{12F5F746-2725-45BD-A1C4-FC34CE329AAB} = {7D56A5F2-95F2-4075-93C5-48820DC940C1}
+		{02B83385-9E0E-48F1-9B12-58BF67B76C71} = {7D56A5F2-95F2-4075-93C5-48820DC940C1}
 	EndGlobalSection
 EndGlobal

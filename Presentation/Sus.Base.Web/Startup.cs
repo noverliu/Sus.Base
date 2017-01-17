@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sus.Base.Core.Infrastructure;
+using Sus.Base.Core.Configuration;
 
 namespace Sus.Base.Web
 {
@@ -35,12 +37,15 @@ namespace Sus.Base.Web
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
-
+            services.AddOptions();
+            services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
             services.AddMvc();
+            EngineContext._services = services;
+            EngineContext.Initialize(false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,IServiceProvider service)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -60,7 +65,7 @@ namespace Sus.Base.Web
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseStaticFiles();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
