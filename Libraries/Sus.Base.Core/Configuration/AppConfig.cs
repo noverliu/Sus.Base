@@ -10,5 +10,7 @@ namespace Sus.Base.Core.Configuration
         public bool IgnoreStartupTasks { get; set; }
         public string assemblySkipLoadingPattern { get; set; }
         public string assemblyRestrictToLoadingPattern { get; set; }
+        public string RedisCachingConnectionString { get; set; }
+        public int RedisCachingDataBaseId { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
+using Sus.Base.Core.Configuration;
 using Sus.Base.Core.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -9,18 +10,71 @@ using System.Threading.Tasks;
 
 namespace Sus.Base.Core.Caching
 {
-    public class RedisCacheManager:ICacheManager
+    class RedisManager
     {
-        protected IDatabase _cache;
+        private static ConnectionMultiplexer _muxer;
 
-        private ConnectionMultiplexer _connection;
+        private static IDatabase _db;
 
-        public RedisCacheManager(string constr,int dbid = 1)
+        public static IDatabase GetDb()
         {
-            _connection = ConnectionMultiplexer.Connect(constr);
-            _cache = _connection.GetDatabase(dbid);
+            if (_db == null || !_muxer.IsConnected)
+            {
+                var config = EngineContext.Current.Resolve<AppConfig>();
+                if (_muxer == null || !_muxer.IsConnected)
+                    _muxer = ConnectionMultiplexer.Connect(config.RedisCachingConnectionString);
+                _db = _muxer.GetDatabase(config.RedisCachingDataBaseId);
+            }
+            return _db;
         }
-       
+
+        public static ConnectionMultiplexer GetMuxer()
+        {
+            if (_muxer == null || !_muxer.IsConnected)
+            {
+                var config = EngineContext.Current.Resolve<AppConfig>();
+                _muxer = ConnectionMultiplexer.Connect(config.RedisCachingConnectionString);
+            }
+            return _muxer;
+        }
+    }
+
+
+    /// <summary>
+    /// Represents a manager for caching in Redis store (http://redis.io/).
+    /// Mostly it'll be used when running in a web farm or Azure.
+    /// But of course it can be also used on any server or environment
+    /// </summary>
+    public partial class RedisCacheManager : ICacheManager
+    {
+        #region Fields
+
+        private readonly ICacheManager _perRequestCacheManager;
+        #endregion
+
+        #region Ctor
+
+        public RedisCacheManager(AppConfig config)
+        {
+            if (String.IsNullOrEmpty(config.RedisCachingConnectionString))
+                throw new Exception("Redis connection string is empty");
+
+            //this._muxer = ConnectionMultiplexer.Connect(config.RedisCachingConnectionString);
+
+            //this._db = _muxer.GetDatabase(config.RedisCachingDataBaseId);
+            this._perRequestCacheManager = EngineContext.Current.Resolve<ICacheManager>();
+
+            //var logger = NLog.LogManager.GetCurrentClassLogger();
+            //logger.Debug("初始化Redis--1");
+        }
+
+
+
+
+        #endregion
+
+        #region Utilities
+
         protected virtual byte[] Serialize(object item)
         {
             var jsonString = JsonConvert.SerializeObject(item);
@@ -34,27 +88,42 @@ namespace Sus.Base.Core.Caching
             var jsonString = Encoding.UTF8.GetString(serializedObject);
             return JsonConvert.DeserializeObject<T>(jsonString);
         }
-        public string GetKeyForRedis(string key)
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Gets or sets the value associated with the specified key.
+        /// </summary>
+        /// <typeparam name="T">Type</typeparam>
+        /// <param name="key">The key of the value to get.</param>
+        /// <returns>The value associated with the specified key.</returns>
+        public virtual T Get<T>(string key)
         {
-            return  key;
-        }
-        public T Get<T>(string key)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            
-            var rValue = _cache.StringGet(key);
+            //little performance workaround here:
+            //we use "PerRequestCacheManager" to cache a loaded object in memory for the current HTTP request.
+            //this way we won't connect to Redis server 500 times per HTTP request (e.g. each time to load a locale or setting)
+            if (_perRequestCacheManager.IsSet(key))
+                return _perRequestCacheManager.Get<T>(key);
+            var db = RedisManager.GetDb();
+
+            var rValue = db.StringGet(key);
             if (!rValue.HasValue)
                 return default(T);
             var result = Deserialize<T>(rValue);
 
-            this.Set(key, result, 0);
+            _perRequestCacheManager.Set(key, result, 0);
             return result;
         }
 
-        public void Set(string key, object data, int cacheTime)
+        /// <summary>
+        /// Adds the specified key and object to the cache.
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <param name="data">Data</param>
+        /// <param name="cacheTime">Cache time</param>
+        public virtual void Set(string key, object data, int cacheTime)
         {
             if (data == null)
                 return;
@@ -62,66 +131,92 @@ namespace Sus.Base.Core.Caching
             var entryBytes = Serialize(data);
             var expiresIn = TimeSpan.FromMinutes(cacheTime);
 
-            _cache.StringSet(key, entryBytes, expiresIn);
+            RedisManager.GetDb().StringSet(key, entryBytes, expiresIn);
         }
 
-        public bool IsSet(string key)
+        /// <summary>
+        /// Gets a value indicating whether the value associated with the specified key is cached
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <returns>Result</returns>
+        public virtual bool IsSet(string key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            return _cache.KeyExists(GetKeyForRedis(key));
+            //little performance workaround here:
+            //we use "PerRequestCacheManager" to cache a loaded object in memory for the current HTTP request.
+            //this way we won't connect to Redis server 500 times per HTTP request (e.g. each time to load a locale or setting)
+            if (_perRequestCacheManager.IsSet(key))
+                return true;
+
+            return RedisManager.GetDb().KeyExists(key);
         }
 
-        public void Remove(string key)
+        /// <summary>
+        /// Removes the value with the specified key from the cache
+        /// </summary>
+        /// <param name="key">/key</param>
+        public virtual void Remove(string key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            _cache.KeyDelete(key);
+            RedisManager.GetDb().KeyDelete(key);
         }
 
-        public void RemoveByPattern(string pattern)
+        /// <summary>
+        /// Removes items by pattern
+        /// </summary>
+        /// <param name="pattern">pattern</param>
+        public virtual void RemoveByPattern(string pattern)
         {
-            if (pattern == null)
+            var _muxer = RedisManager.GetMuxer();
+            var _db = RedisManager.GetDb();
+            foreach (var ep in _muxer.GetEndPoints())
             {
-                throw new ArgumentNullException(nameof(pattern));
-            }
-            foreach(var ep in _connection.GetEndPoints())
-            {
-                var server = _connection.GetServer(ep);
-                var keys = server.Keys(pattern: "*" + pattern + "*", database: _cache.Database);
-                foreach(var key in keys)
-                {
-                    _cache.KeyDelete(key);
-                }
-            }
-            
-        }
-
-        public void Clear()
-        {
-            foreach (var ep in _connection.GetEndPoints())
-            {
-                var server = _connection.GetServer(ep);
-                var keys = server.Keys(_cache.Database);
+                var server = _muxer.GetServer(ep);
+                var keys = server.Keys(pattern: "*" + pattern + "*", database: _db.Database);
                 foreach (var key in keys)
-                {
-                    _cache.KeyDelete(key);
-                }
+                    _db.KeyDelete(key);
             }
         }
 
+        /// <summary>
+        /// Clear all cache data
+        /// </summary>
+        public virtual void Clear()
+        {
+            var _muxer = RedisManager.GetMuxer();
+            var _db = RedisManager.GetDb();
+            foreach (var ep in _muxer.GetEndPoints())
+            {
+                var server = _muxer.GetServer(ep);
+                //we can use the code belwo (commented)
+                //but it requires administration permission - ",allowAdmin=true"
+                //server.FlushDatabase();
+
+                //that's why we simply interate through all elements now
+                var keys = server.Keys(_db.Database);
+                foreach (var key in keys)
+                    _db.KeyDelete(key);
+            }
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public virtual void Dispose()
+        {
+            //if (_muxer != null)
+            //    _muxer.Dispose();
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 基于缓存的分布式锁 加锁（redis、Memcached有效） caodq 20160615
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool Lock(string key)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
+            return RedisManager.GetDb().LockTake(key, 0, TimeSpan.FromMinutes(5));
         }
     }
 }
