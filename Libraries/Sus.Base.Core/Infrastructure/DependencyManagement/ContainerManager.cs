@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Core.Lifetime;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,17 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
     public class ContainerManager
     {
         private readonly IContainer _container;
-
-
+        private readonly IServiceProvider _service;
+        private ILifetimeScope _lifetime;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="container">Conainer</param>
-        public ContainerManager(IContainer container)
+        public ContainerManager(IContainer container
+            ,IServiceProvider service)
         {
             this._container = container;
+            this._service = service;
         }
 
         /// <summary>
@@ -42,6 +45,8 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <returns>Resolved service</returns>
         public virtual T Resolve<T>(string key = "", ILifetimeScope scope = null) where T : class
         {
+            var a = _service.GetService(typeof(T));
+            return (T)a;
             if (scope == null)
             {
                 //no scope specified
@@ -62,6 +67,9 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <returns>Resolved service</returns>
         public virtual object Resolve(Type type, ILifetimeScope scope = null)
         {
+            var tp= type.GetType(); 
+            var t = _service.GetService(type);
+
             if (scope == null)
             {
                 //no scope specified
@@ -79,6 +87,7 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <returns>Resolved services</returns>
         public virtual T[] ResolveAll<T>(string key = "", ILifetimeScope scope = null)
         {
+            
             if (scope == null)
             {
                 //no scope specified
@@ -195,13 +204,17 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         {
             try
             {
-
+                var factory=_service.GetService(typeof(IHttpContextAccessor));
+                if (((IHttpContextAccessor)factory).HttpContext == null)
+                {
+                    _lifetime= Container.BeginLifetimeScope(new CurrentScopeLifetime());                    
+                }
                 //if (B2C3HttpContext.Current != null)
                 //{                    
                 //    //return AutofacDependencyResolver.Current.RequestLifetimeScope;
                 //}
                 //when such lifetime scope is returned, you should be sure that it'll be disposed once used (e.g. in schedule tasks)
-                return Container.BeginLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag);
+                return _lifetime;
             }
             catch (Exception)
             {
@@ -210,7 +223,8 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
                 //but note that usually it should never happen
 
                 //when such lifetime scope is returned, you should be sure that it'll be disposed once used (e.g. in schedule tasks)
-                return Container.BeginLifetimeScope(MatchingScopeLifetimeTags.RequestLifetimeScopeTag);
+                _lifetime = Container.BeginLifetimeScope(new CurrentScopeLifetime());
+                return _lifetime;
             }
         }
     }

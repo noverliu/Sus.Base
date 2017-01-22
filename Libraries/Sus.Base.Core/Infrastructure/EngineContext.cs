@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Autofac;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Sus.Base.Core.Configuration;
@@ -12,25 +14,36 @@ namespace Sus.Base.Core.Infrastructure
 {
     public class EngineContext
     {
-        public static IServiceCollection _services;
+        private static IServiceCollection _services;
         private static IServiceProvider _service;
         #region Methods
 
-        public static IEngine Initialize(bool forceRecreate)
+        public static IEngine Initialize(bool forceRecreate,IServiceCollection services)
         {
             lock (typeof(EngineContext))
             {
+                
                 if (Singleton<IEngine>.Instance == null || forceRecreate)
                 {
+                    _services = services;
                     Singleton<IEngine>.Instance = new AppEngine();
-                    _service = _services.BuildServiceProvider();
+                    _service = services.BuildServiceProvider();
                     var config = _service.GetService<IOptions<AppConfig>>().Value;
-                    Singleton<IEngine>.Instance.Initialize(_services, config);
+                    var httpcontext = _service.GetService<HttpContext>();
+                    Singleton<IEngine>.Instance.Initialize(services, config);
                 }
                 return Singleton<IEngine>.Instance;
             }
         }
-
+        public static void RunStartUpTask(IServiceProvider service)
+        {
+            var config = service.GetService<IOptions<AppConfig>>().Value;
+            //startup tasks
+            if (!config.IgnoreStartupTasks)
+            {
+                Current.RunStartupTask(service);
+            }
+        }
         /// <summary>
         /// Sets the static engine instance to the supplied engine. Use this method to supply your own engine implementation.
         /// </summary>
@@ -54,7 +67,7 @@ namespace Sus.Base.Core.Infrastructure
             {
                 if (Singleton<IEngine>.Instance == null)
                 {
-                    Initialize(false);
+                    Initialize(false,_services);
                 }
                 return Singleton<IEngine>.Instance;
             }

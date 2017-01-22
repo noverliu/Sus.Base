@@ -2,6 +2,7 @@
 using StackExchange.Redis;
 using Sus.Base.Core.Configuration;
 using Sus.Base.Core.Infrastructure;
+using Sus.Base.Core.Infrastructure.DependencyManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Sus.Base.Core.Caching
         {
             if (_db == null || !_muxer.IsConnected)
             {
-                var config = EngineContext.Current.Resolve<AppConfig>();
+                var config = StaticResolver.Resolve<AppConfig>();
                 if (_muxer == null || !_muxer.IsConnected)
                     _muxer = ConnectionMultiplexer.Connect(config.RedisCachingConnectionString);
                 _db = _muxer.GetDatabase(config.RedisCachingDataBaseId);
@@ -32,7 +33,7 @@ namespace Sus.Base.Core.Caching
         {
             if (_muxer == null || !_muxer.IsConnected)
             {
-                var config = EngineContext.Current.Resolve<AppConfig>();
+                var config = StaticResolver.Resolve<AppConfig>();
                 _muxer = ConnectionMultiplexer.Connect(config.RedisCachingConnectionString);
             }
             return _muxer;
@@ -62,7 +63,7 @@ namespace Sus.Base.Core.Caching
             //this._muxer = ConnectionMultiplexer.Connect(config.RedisCachingConnectionString);
 
             //this._db = _muxer.GetDatabase(config.RedisCachingDataBaseId);
-            this._perRequestCacheManager = EngineContext.Current.Resolve<ICacheManager>();
+            this._perRequestCacheManager = StaticResolver.Resolve<ICacheManager>();
 
             //var logger = NLog.LogManager.GetCurrentClassLogger();
             //logger.Debug("初始化Redis--1");

@@ -8,6 +8,7 @@ using Sus.Base.Core.Infrastructure.DependencyManagement;
 using Autofac;
 using Microsoft.AspNetCore.Hosting;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 
 namespace Sus.Base.Core.Infrastructure
 {
@@ -15,19 +16,20 @@ namespace Sus.Base.Core.Infrastructure
     {
         #region Fields
         
-        private ContainerManager _containerManager;
+        //private ContainerManager _containerManager;
+        private IContainer _container;
         #endregion
 
-        public ContainerManager ContainerManager
+        public IContainer Container
         {
             get
             {
-                return _containerManager;
+                return _container;
             }
         }
-        protected virtual void RunStartupTasks()
+        protected virtual void RunStartupTasks(IServiceProvider service)
         {
-            var typeFinder = _containerManager.Resolve<ITypeFinder>();
+            var typeFinder =service.GetService<ITypeFinder>();
             var startUpTaskTypes = typeFinder.FindClassesOfType<IStartupTask>();
             var startUpTasks = new List<IStartupTask>();
             foreach (var startUpTaskType in startUpTaskTypes)
@@ -42,38 +44,22 @@ namespace Sus.Base.Core.Infrastructure
             services.AddSingleton<ITypeFinder,WebAppTypeFinder>(); 
             RegisterDependencies(services,config);
 
-            //startup tasks
-            if (!config.IgnoreStartupTasks)
-            {
-                RunStartupTasks();
-            }
+            ////startup tasks
+            //if (!config.IgnoreStartupTasks)
+            //{
+            //    RunStartupTasks();
+            //}
         }
-        protected virtual void RegisterDependencies(IServiceCollection service,AppConfig config)
+        public void RunStartupTask(IServiceProvider service)
         {
-            ContainerBuilder builder = new ContainerBuilder(),
-                            tmpbuilder = new ContainerBuilder();
-            //we create new instance of ContainerBuilder
-            //because Build() or Update() method can only be called once on a ContainerBuilder.
-
+            RunStartupTasks(service);
+        }
+        protected virtual void RegisterDependencies(IServiceCollection services,AppConfig config)
+        {
+            
             //dependencies
-            var sp = service.BuildServiceProvider();
+            var sp = services.BuildServiceProvider();
             var typeFinder = sp.GetService<ITypeFinder>();
-            var env = service.BuildServiceProvider().GetService<IHostingEnvironment>();
-
-            tmpbuilder.RegisterInstance(env).As<IHostingEnvironment>().SingleInstance();
-            tmpbuilder.RegisterInstance(service).As<IServiceCollection>().SingleInstance();
-            tmpbuilder.RegisterInstance(config).As<AppConfig>().SingleInstance();
-            tmpbuilder.RegisterInstance(this).As<IEngine>().SingleInstance();
-            tmpbuilder.RegisterInstance(typeFinder).As<ITypeFinder>().SingleInstance();
-
-            builder.RegisterInstance(env).As<IHostingEnvironment>().SingleInstance();
-            builder.RegisterInstance(service).As<IServiceCollection>().SingleInstance();
-            builder.RegisterInstance(config).As<AppConfig>().SingleInstance();
-            builder.RegisterInstance(this).As<IEngine>().SingleInstance();
-            builder.RegisterInstance(typeFinder).As<ITypeFinder>().SingleInstance();
-
-            var container = tmpbuilder.Build();
-            this._containerManager = new ContainerManager(container);
 
             var drTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
             var drInstances = new List<IDependencyRegistrar>();
@@ -82,25 +68,19 @@ namespace Sus.Base.Core.Infrastructure
 
             drInstances = drInstances.AsQueryable().OrderBy(t => t.Order).ToList();
             foreach (var dependencyRegistrar in drInstances)
-                dependencyRegistrar.Register(builder, typeFinder,sp);
-            builder.Populate(service);
-            container = builder.Build();
-            this._containerManager = new ContainerManager(container);
+                dependencyRegistrar.Register(services, typeFinder,sp,config);
+
         }
 
-        public object Resolve(Type type)
-        {
-            return ContainerManager.Resolve(type);
-        }
+        //public object Resolve(Type type)
+        //{
+        //    return _container.RequestServices.GetService(type);
+        //}
 
-        public T Resolve<T>() where T : class
-        {
-            return ContainerManager.Resolve<T>();
-        }
+        //public T Resolve<T>() where T : class
+        //{
+        //    return SusHttpContext.Current.RequestServices.GetService<T>();
+        //}
 
-        public T[] ResolveAll<T>()
-        {
-            return ContainerManager.ResolveAll<T>();
-        }
     }
 }

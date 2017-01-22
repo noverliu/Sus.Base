@@ -1,6 +1,7 @@
 ﻿using Sus.Base.Core;
 using Sus.Base.Core.Data;
 using Sus.Base.Core.Infrastructure;
+using Sus.Base.Core.Infrastructure.DependencyManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,10 @@ namespace Sus.Base.Data
 
         public void Execute()
         {
-            var settings = EngineContext.Current.Resolve<DataSettings>();
+            var settings = StaticResolver.Resolve<DataSettings>();
             if (settings != null && settings.IsValid())
             {
-                var provider = EngineContext.Current.Resolve<IDataProvider>();
+                var provider = StaticResolver.Resolve<IDataProvider>();
                 if (provider == null)
                     throw new SusException("No IDataProvider found");
                 provider.SetDatabaseInitializer();

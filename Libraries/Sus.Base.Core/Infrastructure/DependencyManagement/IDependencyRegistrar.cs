@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Microsoft.Extensions.DependencyInjection;
+using Sus.Base.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,7 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <param name="builder">Container builder</param>
         /// <param name="typeFinder">Type finder</param>
         /// <param name="config">Config</param>
-        void Register(ContainerBuilder builder, ITypeFinder typeFinder,IServiceProvider service);
+        void Register(IServiceCollection services, ITypeFinder typeFinder, IServiceProvider sp, AppConfig config);
 
         /// <summary>
         /// Order of this dependency registrar implementation

@@ -9,6 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sus.Base.Core.Infrastructure;
 using Sus.Base.Core.Configuration;
+using Sus.Base.Framework;
+using Sus.Base.Core;
+using Sus.Base.Framework.Mvc.Routes;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Sus.Base.Core.Infrastructure.DependencyManagement;
+using Microsoft.Extensions.Options;
 
 namespace Sus.Base.Web
 {
@@ -21,7 +30,6 @@ namespace Sus.Base.Web
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-
             if (env.IsDevelopment())
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
@@ -29,7 +37,7 @@ namespace Sus.Base.Web
             }
             Configuration = builder.Build();
         }
-
+        //public IContainer ApplicationContainer { get; private set; }
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -38,20 +46,28 @@ namespace Sus.Base.Web
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddOptions();
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
+            
             services.AddMvc();
-            EngineContext._services = services;
-            EngineContext.Initialize(false);
+            
+            EngineContext.Initialize(false,services);
+            //this.ApplicationContainer = container;
+            //return new AutofacServiceProvider(ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,IServiceProvider service)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,IServiceProvider service,IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            //SusHttpContext.Config(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
+            //处理静态注入类ServiceProvider的中间件，感觉不是很优雅，等以后大神的解决方案吧
+            app.UseMiddleware<StaticResolverMiddleware>();
+            StaticResolver.Config(app.ApplicationServices);
+            EngineContext.RunStartUpTask(service);
             app.UseApplicationInsightsRequestTelemetry();
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -63,15 +79,17 @@ namespace Sus.Base.Web
             }
 
             app.UseApplicationInsightsExceptionTelemetry();
-
             app.UseStaticFiles();
-            
+            //app.Use(new Func<RequestDelegate, RequestDelegate>(nextapp => new ContainerMiddleware(nextapp,app.ApplicationServices)))
             app.UseMvc(routes =>
             {
+                var rp= service.GetService<IRoutePublisher>();
+                rp.RegisterRoutes(routes);
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            //appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }
     }
 }

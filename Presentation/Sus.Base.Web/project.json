@@ -4,7 +4,6 @@
       "version": "1.0.1",
       "type": "platform"
     },
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.1",
     "Microsoft.AspNetCore.Razor.Tools": {
@@ -17,14 +16,15 @@
     "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
     "Sus.Base.Data": "1.0.0-*",
     "Sus.Base.Core": "1.0.0-*",
-    "Sus.Base.Framework": "1.0.0-*"
+    "Sus.Base.Framework": "1.0.0-*",
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.2"
   },
 
   "tools": {

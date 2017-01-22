@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Sus.Base.Core.Infrastructure.DependencyManagement;
 using Sus.Base.Core.Configuration;
+using Autofac;
 
 namespace Sus.Base.Core.Infrastructure
 {
@@ -13,7 +14,7 @@ namespace Sus.Base.Core.Infrastructure
         /// <summary>
         /// Container manager
         /// </summary>
-        ContainerManager ContainerManager { get; }
+        IContainer Container { get; }
 
         /// <summary>
         /// Initialize components and plugins in the nop environment.
@@ -26,20 +27,15 @@ namespace Sus.Base.Core.Infrastructure
         /// </summary>
         /// <typeparam name="T">T</typeparam>
         /// <returns></returns>
-        T Resolve<T>() where T : class;
+        //T Resolve<T>() where T : class;
 
-        /// <summary>
-        ///  Resolve dependency
-        /// </summary>
-        /// <param name="type">Type</param>
-        /// <returns></returns>
-        object Resolve(Type type);
+        ///// <summary>
+        /////  Resolve dependency
+        ///// </summary>
+        ///// <param name="type">Type</param>
+        ///// <returns></returns>
+        //object Resolve(Type type);
 
-        /// <summary>
-        /// Resolve dependencies
-        /// </summary>
-        /// <typeparam name="T">T</typeparam>
-        /// <returns></returns>
-        T[] ResolveAll<T>();
+        void RunStartupTask(IServiceProvider service);
     }
 }

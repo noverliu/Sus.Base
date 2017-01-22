@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Sus.Base.Web.Controllers
 {
+    
     public class HomeController : Controller
     {
         public IActionResult Index()
