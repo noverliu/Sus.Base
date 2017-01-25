@@ -100,6 +100,11 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
             return scope.ResolveKeyed<IEnumerable<T>>(key).ToArray();
         }
 
+        internal void BuildScope()
+        {
+            _lifetime = _container.BeginLifetimeScope();
+        }
+
         /// <summary>
         /// Resolve unregistered service
         /// </summary>
@@ -204,25 +209,12 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         {
             try
             {
-                var factory=_service.GetService(typeof(IHttpContextAccessor));
-                if (((IHttpContextAccessor)factory).HttpContext == null)
-                {
-                    _lifetime= Container.BeginLifetimeScope(new CurrentScopeLifetime());                    
-                }
-                //if (B2C3HttpContext.Current != null)
-                //{                    
-                //    //return AutofacDependencyResolver.Current.RequestLifetimeScope;
-                //}
-                //when such lifetime scope is returned, you should be sure that it'll be disposed once used (e.g. in schedule tasks)
+                if(_lifetime==null)
+                    _lifetime = Container.BeginLifetimeScope(new CurrentScopeLifetime());
                 return _lifetime;
             }
             catch (Exception)
-            {
-                //we can get an exception here if RequestLifetimeScope is already disposed
-                //for example, requested in or after "Application_EndRequest" handler
-                //but note that usually it should never happen
-
-                //when such lifetime scope is returned, you should be sure that it'll be disposed once used (e.g. in schedule tasks)
+            {                
                 _lifetime = Container.BeginLifetimeScope(new CurrentScopeLifetime());
                 return _lifetime;
             }

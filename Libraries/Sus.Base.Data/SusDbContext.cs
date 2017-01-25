@@ -18,7 +18,7 @@ namespace Sus.Base.Data
 
         }
         public SusDbContext(DbContextOptions<SusDbContext> options) : base(options)
-        {
+        {            
             _option = options;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -27,14 +27,29 @@ namespace Sus.Base.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var typesToRegister = typeof(EntityTypeConfiguration<>).GetTypeInfo().Assembly.GetTypes()
+            var typesToRegister = typeof(IEntityTypeConfiguration<>).GetTypeInfo().Assembly.GetTypes()
             .Where(type => !String.IsNullOrEmpty(type.Namespace))
             .Where(type => type.GetTypeInfo().BaseType != null && type.GetTypeInfo().BaseType.GetTypeInfo().IsGenericType &&
-                type.GetTypeInfo().BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>));
+                type.GetTypeInfo().BaseType.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>));
+
+            var entityMethod = typeof(ModelBuilder).GetMethods()
+        .Single(x => x.Name == "Entity" &&
+                x.IsGenericMethod &&
+                x.ReturnType.Name == "EntityTypeBuilder`1");
+
             foreach (var type in typesToRegister)
             {
-                dynamic configurationInstance = Activator.CreateInstance(type);
-                modelBuilder.AddConfiguration((EntityTypeConfiguration<dynamic>)configurationInstance);
+                var genericTypeArg = type.GetInterfaces().Single().GenericTypeArguments.Single();
+
+                // Get the method builder.Entity<TEntity>
+                var genericEntityMethod = entityMethod.MakeGenericMethod(genericTypeArg);
+
+                // Invoke builder.Entity<TEntity> to get a builder for the entity to be mapped
+                var entityBuilder = genericEntityMethod.Invoke(modelBuilder, null);
+
+                // Create the mapping type and do the mapping
+                var mapper = Activator.CreateInstance(type);
+                mapper.GetType().GetMethod("Map").Invoke(mapper, new[] { entityBuilder });
             }
             base.OnModelCreating(modelBuilder);   
         }

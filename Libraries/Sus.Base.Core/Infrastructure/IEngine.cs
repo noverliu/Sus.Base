@@ -25,17 +25,17 @@ namespace Sus.Base.Core.Infrastructure
         /// <summary>
         /// Resolve dependency
         /// </summary>
-        /// <typeparam name="T">T</typeparam>
+        /// <typeparam name = "T" > T </ typeparam >
+        /// < returns ></ returns >
+        T Resolve<T>() where T : class;
+
+        /// <summary>
+        ///  Resolve dependency
+        /// </summary>
+        /// <param name="type">Type</param>
         /// <returns></returns>
-        //T Resolve<T>() where T : class;
-
-        ///// <summary>
-        /////  Resolve dependency
-        ///// </summary>
-        ///// <param name="type">Type</param>
-        ///// <returns></returns>
-        //object Resolve(Type type);
-
+        object Resolve(Type type);
+        void CreateScope();
         void RunStartupTask(IServiceProvider service);
     }
 }

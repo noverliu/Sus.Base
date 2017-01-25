@@ -17,10 +17,10 @@ namespace Sus.Base.Core.Infrastructure
         #region Fields
         
         //private ContainerManager _containerManager;
-        private IContainer _container;
+        private ContainerManager _container;
         #endregion
 
-        public IContainer Container
+        public ContainerManager Container
         {
             get
             {
@@ -72,15 +72,18 @@ namespace Sus.Base.Core.Infrastructure
 
         }
 
-        //public object Resolve(Type type)
-        //{
-        //    return _container.RequestServices.GetService(type);
-        //}
+        public object Resolve(Type type)
+        {
+            return _container.Resolve(type);
+        }
 
-        //public T Resolve<T>() where T : class
-        //{
-        //    return SusHttpContext.Current.RequestServices.GetService<T>();
-        //}
-
+        public T Resolve<T>() where T : class
+        {
+            return _container.Resolve<T>();
+        }
+        public void CreateScope()
+        {
+            _container.BuildScope();
+        }
     }
 }
