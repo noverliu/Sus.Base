@@ -48,6 +48,7 @@ namespace Sus.Base.Web
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddOptions();
+            services.AddAuthorization();
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
             services.AddSingleton(_env);
@@ -69,7 +70,14 @@ namespace Sus.Base.Web
             StaticResolver.Config(app.ApplicationServices);
             EngineContext.RunStartUpTask(service);
             app.UseApplicationInsightsRequestTelemetry();
-            
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Cookie",
+                LoginPath = new PathString("/Login"),
+                AccessDeniedPath = new PathString("/Forbidden"),
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -17,6 +17,7 @@ using Sus.Base.Framework.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Sus.Base.Services.Security;
 using Sus.Base.Services.User;
+using Sus.Base.Services.Authentication;
 
 namespace Sus.Base.Framework
 {
@@ -77,6 +78,7 @@ namespace Sus.Base.Framework
             builder.RegisterType<EncryptionService>().As<IEncryptionService>().InstancePerLifetimeScope();
             builder.RegisterType<UserIdentifyService>().As<IUserIdentifyService>().InstancePerLifetimeScope();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
+            builder.RegisterType<AuthenticationService>().As<IAuthenticationService>().InstancePerLifetimeScope();
         }
     }
 }

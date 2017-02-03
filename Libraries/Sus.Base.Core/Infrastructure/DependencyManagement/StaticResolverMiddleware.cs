@@ -15,7 +15,6 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         }
         public async Task Invoke(HttpContext context)
         {
-            //使用HttpContext中的ServiceProvider替代静态类中的sp
             EngineContext.Current.CreateScope();
             await _next.Invoke(context);
         }

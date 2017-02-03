@@ -24,7 +24,8 @@
     "Sus.Base.Data": "1.0.0-*",
     "Sus.Base.Core": "1.0.0-*",
     "Sus.Base.Framework": "1.0.0-*",
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.2"
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.2",
+    "Microsoft.AspNetCore.Authentication.Cookies": "1.0.0"
   },
 
   "tools": {
