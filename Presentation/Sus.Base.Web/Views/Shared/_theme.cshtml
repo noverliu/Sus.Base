@@ -1,0 +1,9 @@
+﻿@using Sus.Base.Framework.UI
+
+@{
+    Layout = "_global";
+    Html.AddCssFileParts(ResourceLocation.ThemeGlobal, "~/assets/global/css/components.min.css");
+    Html.AddCssFileParts(ResourceLocation.ThemeGlobal, "~/assets/global/css/plugins.min.css");
+    Html.AddScriptParts(ResourceLocation.ThemeGlobal, "~/assets/global/scripts/app.min.js");
+}
+@RenderBody()

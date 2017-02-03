@@ -94,7 +94,7 @@ namespace Sus.Base.Core.Plugins
         public virtual T Instance<T>() where T : class, IPlugin
         {
             object instance;
-            if (!EngineContext.Current.Container.TryResolve(PluginType, out instance))
+            if (!EngineContext.Current.Container.TryResolve(PluginType,null, out instance))
             {
                 //not resolved
                 instance = EngineContext.Current.Container.Resolve(PluginType);

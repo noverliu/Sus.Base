@@ -23,6 +23,7 @@ namespace Sus.Base.Web
 {
     public class Startup
     {
+        private IHostingEnvironment _env;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -30,7 +31,7 @@ namespace Sus.Base.Web
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            CommonHelper._env = env;
+            _env = env;
             if (env.IsDevelopment())
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
@@ -38,23 +39,23 @@ namespace Sus.Base.Web
             }
             Configuration = builder.Build();
         }
-        //public IContainer ApplicationContainer { get; private set; }
+        public IContainer ApplicationContainer { get; private set; }
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddOptions();
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
-            
+            services.AddSingleton(_env);
             services.AddMvc();
-            
+            StaticResolver.Config(services.BuildServiceProvider());
             EngineContext.Initialize(false,services);
             //this.ApplicationContainer = container;
-            //return new AutofacServiceProvider(ApplicationContainer);
+            return new AutofacServiceProvider(EngineContext.Current.Container.Container);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

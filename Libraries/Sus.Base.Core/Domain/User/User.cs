@@ -10,7 +10,7 @@ namespace Sus.Base.Core.Domain.User
         private ICollection<User_UserRole_Map> _roles;
         public User()
         {
-            this.Guid = new Guid();
+            this.Guid = Guid.NewGuid();
         }
         public string UserName { get; set; }
         public Guid Guid { get; set; }
@@ -22,5 +22,12 @@ namespace Sus.Base.Core.Domain.User
             get { return _roles ?? (_roles = new List<User_UserRole_Map>()); }
             set { _roles = value; }
         }
+        public int PasswordFormatId { get; set; }
+        public PasswordFormat PasswordFormat
+        {
+            get { return (PasswordFormat)PasswordFormatId; }
+            set { this.PasswordFormatId = (int)value; }
+        }
+        public string PasswordSalt { get; set; }
     }
 }

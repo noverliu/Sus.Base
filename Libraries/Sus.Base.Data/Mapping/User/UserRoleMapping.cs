@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Sus.Base.Data.Mapping.User
 {
-    public class UserRoleMapping : IEntityTypeConfiguration<UserRole>
+    public class UserRoleMapping : EntityTypeConfiguration<UserRole>
     {
-        public void Map(EntityTypeBuilder<UserRole> builder)
+        public override void Map(EntityTypeBuilder<UserRole> builder)
         {
             builder.HasKey(x => x.Id);
             builder.HasMany(x => x.UserMaps).WithOne().HasForeignKey(x => x.UserRoleId);

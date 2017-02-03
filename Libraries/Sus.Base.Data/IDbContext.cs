@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Sus.Base.Core;
 using System;
@@ -10,6 +11,7 @@ namespace Sus.Base.Data
 {
     public interface IDbContext
     {
+        DatabaseFacade db();
         DbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity;
         int SaveChanges();
         IDbContextTransaction BeginTrans();

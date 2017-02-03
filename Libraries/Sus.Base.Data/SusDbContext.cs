@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Sus.Base.Core;
+using Sus.Base.Core.Domain.User;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,19 +29,19 @@ namespace Sus.Base.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var typesToRegister = typeof(IEntityTypeConfiguration<>).GetTypeInfo().Assembly.GetTypes()
+            var typesToRegister = typeof(EntityTypeConfiguration<>).GetTypeInfo().Assembly.GetTypes()
             .Where(type => !String.IsNullOrEmpty(type.Namespace))
             .Where(type => type.GetTypeInfo().BaseType != null && type.GetTypeInfo().BaseType.GetTypeInfo().IsGenericType &&
-                type.GetTypeInfo().BaseType.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>));
+                type.GetTypeInfo().BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>));
 
             var entityMethod = typeof(ModelBuilder).GetMethods()
         .Single(x => x.Name == "Entity" &&
                 x.IsGenericMethod &&
                 x.ReturnType.Name == "EntityTypeBuilder`1");
-
+            
             foreach (var type in typesToRegister)
             {
-                var genericTypeArg = type.GetInterfaces().Single().GenericTypeArguments.Single();
+                var genericTypeArg = type.GetTypeInfo().BaseType.GenericTypeArguments.Single();
 
                 // Get the method builder.Entity<TEntity>
                 var genericEntityMethod = entityMethod.MakeGenericMethod(genericTypeArg);
@@ -74,7 +76,25 @@ namespace Sus.Base.Data
 
         public IDbContextTransaction BeginTrans()
         {
+            
            return base.Database.BeginTransaction();
+        }
+        public DatabaseFacade db()
+        {
+            return this.Database;
+        }
+        public IDbContextTransaction CurrTrans()
+        {
+            return base.Database.CurrentTransaction;
+        }
+        public override int SaveChanges()
+        {
+            if (this.Database.CurrentTransaction != null)
+            {
+                this.Database.CommitTransaction();
+                return 0;
+            }
+            return base.SaveChanges();
         }
     }
 }

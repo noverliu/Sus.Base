@@ -1,8 +1,10 @@
-﻿{
+{
   "version": "1.0.0-*",
 
   "dependencies": {
-    "NETStandard.Library": "1.6.1"
+    "NETStandard.Library": "1.6.1",
+    "Sus.Base.Core": "1.0.0-*",
+    "Sus.Base.Data": "1.0.0-*"
   },
 
   "frameworks": {

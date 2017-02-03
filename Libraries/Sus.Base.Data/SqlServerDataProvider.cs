@@ -36,16 +36,15 @@ namespace Sus.Base.Data
 
         public void SetDatabaseInitializer()
         {
-            var dbcontext = StaticResolver.Resolve<SusDbContext>();
-            if (!dbcontext.Database.EnsureCreated())
-            {
-                dbcontext.Database.Migrate();
+            var dbcontext = StaticResolver.Resolve<IDbContext>();
+            if (dbcontext.db().EnsureCreated())
                 BuildSeed(dbcontext);
-            }//throw new NotImplementedException();
+            else
+                dbcontext.db().Migrate();
         }
         private void BuildSeed(IDbContext _context)
         {
-            _context.BeginTrans();
+            //_context.BeginTrans();
             var admin = new User
             {
                 UserName = "Admin",
@@ -56,18 +55,20 @@ namespace Sus.Base.Data
             {
                 RoleName = "管理员组"
             };
-            var relation=new User_UserRole_Map
-            {
-                User = admin,
-                Role = administrators
-            };
             _userRepo = StaticResolver.Resolve<IRepository<User>>();
             _userRoleRepo = StaticResolver.Resolve<IRepository<UserRole>>();
             _userUserRoleMapRepo = StaticResolver.Resolve<IRepository<User_UserRole_Map>>();
+            _context.BeginTrans();
             _userRepo.Insert(admin);
             _userRoleRepo.Insert(administrators);
-            _userUserRoleMapRepo.Insert(relation);
             _context.SaveChanges();
+            var relation=new User_UserRole_Map
+            {
+                UserId=admin.Id,
+                UserRoleId = administrators.Id
+            };
+            _userUserRoleMapRepo.Insert(relation);
+            //_context.SaveChanges();
         }
     }
 }

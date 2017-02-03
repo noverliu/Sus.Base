@@ -16,17 +16,17 @@ namespace Sus.Base.Framework.UI
     {
         public static void AddTitleParts(this IHtmlHelper html, string part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AddTitleParts(part);
         }
         public static void AppendTitleParts(this IHtmlHelper html, string part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AppendTitleParts(part);
         }
         public static HtmlString AppTitle(this IHtmlHelper html, bool addDefaultTitle, string part = "")
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             html.AppendTitleParts(part);
             return new HtmlString(html.Encode(pageHeadBuilder.GenerateTitle(addDefaultTitle)));
         }
@@ -49,7 +49,7 @@ namespace Sus.Base.Framework.UI
         /// <param name="excludeFromBundle">A value indicating whether to exclude this script from bundling</param>
         public static void AddScriptParts(this IHtmlHelper html, ResourceLocation location, string part, bool excludeFromBundle = false)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AddScriptParts(location, part, excludeFromBundle);
         }
         /// <summary>
@@ -71,7 +71,7 @@ namespace Sus.Base.Framework.UI
         /// <param name="excludeFromBundle">A value indicating whether to exclude this script from bundling</param>
         public static void AppendScriptParts(this IHtmlHelper html, ResourceLocation location, string part, bool excludeFromBundle = false)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AppendScriptParts(location, part, excludeFromBundle);
         }
         /// <summary>
@@ -85,7 +85,7 @@ namespace Sus.Base.Framework.UI
         public static HtmlString Scripts(this IHtmlHelper html, IUrlHelper urlHelper,
             ResourceLocation location, bool? bundleFiles = null)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             return new HtmlString(pageHeadBuilder.GenerateScripts(urlHelper, location, bundleFiles));
         }
         /// <summary>
@@ -105,7 +105,7 @@ namespace Sus.Base.Framework.UI
         /// <param name="part">CSS part</param>
         public static void AddCssFileParts(this IHtmlHelper html, ResourceLocation location, string part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AddCssFileParts(location, part);
         }
         /// <summary>
@@ -125,7 +125,7 @@ namespace Sus.Base.Framework.UI
         /// <param name="part">CSS part</param>
         public static void AppendCssFileParts(this IHtmlHelper html, ResourceLocation location, string part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AppendCssFileParts(location, part);
         }
         /// <summary>
@@ -139,27 +139,27 @@ namespace Sus.Base.Framework.UI
         public static HtmlString CssFiles(this IHtmlHelper html, IUrlHelper urlHelper,
             ResourceLocation location, bool? bundleFiles = null)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             return new HtmlString(pageHeadBuilder.GenerateCssFiles(urlHelper, location, bundleFiles));
         }
         public static void SetBodyClass(this IHtmlHelper html, string part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.SetBodyClass(part);
         }
         public static void AddBodyClass(this IHtmlHelper html, string part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AddBodyClass(part);
         }
         public static void AddBodyClass(this IHtmlHelper html, List<string> part)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             pageHeadBuilder.AddBodyClass(part);
         }
         public static string BodyClass(this IHtmlHelper html)
         {
-            var pageHeadBuilder = StaticResolver.Resolve<IPageHeadBuilder>();
+            var pageHeadBuilder = EngineContext.Current.Resolve<IPageHeadBuilder>();
             return pageHeadBuilder.GenerateBodyClass();
         }
     }

@@ -10,5 +10,6 @@ namespace Sus.Base.Web.Model.Login
         public string Username { get; set; }
         public string Password { get; set; }
         public bool Remember { get; set; }
+        public bool ShowWarning { get; set; }
     }
 }

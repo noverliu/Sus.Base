@@ -15,7 +15,7 @@ namespace Sus.Base.Core.Infrastructure
     public class AppEngine : IEngine
     {
         #region Fields
-        
+        //public AutofacServiceProvider _afServiceProvider;
         //private ContainerManager _containerManager;
         private ContainerManager _container;
         #endregion
@@ -56,20 +56,31 @@ namespace Sus.Base.Core.Infrastructure
         }
         protected virtual void RegisterDependencies(IServiceCollection services,AppConfig config)
         {
-            
-            //dependencies
+            //IServiceCollection inject
             var sp = services.BuildServiceProvider();
             var typeFinder = sp.GetService<ITypeFinder>();
-
+            var env = sp.GetService<IHostingEnvironment>();
+            //Autofac container inject
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.RegisterInstance(typeFinder).As<ITypeFinder>().SingleInstance();
+            //builder.RegisterInstance(env).As<IHostingEnvironment>().SingleInstance();
+            builder.RegisterInstance(config).As<AppConfig>().SingleInstance();
+            builder.RegisterInstance(this).As<IEngine>().SingleInstance();
+            builder.Populate(services);
+            var container = builder.Build();
+            this._container = new ContainerManager(container);
+            builder = new ContainerBuilder();
             var drTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
             var drInstances = new List<IDependencyRegistrar>();
             foreach (var drType in drTypes)
                 drInstances.Add((IDependencyRegistrar)Activator.CreateInstance(drType));
 
             drInstances = drInstances.AsQueryable().OrderBy(t => t.Order).ToList();
-            foreach (var dependencyRegistrar in drInstances)
-                dependencyRegistrar.Register(services, typeFinder,sp,config);
 
+            foreach (var dependencyRegistrar in drInstances)
+                dependencyRegistrar.Register(builder, typeFinder,sp,config);
+            builder.Update(container);
+            //_afServiceProvider = new AutofacServiceProvider(_container.Container);
         }
 
         public object Resolve(Type type)

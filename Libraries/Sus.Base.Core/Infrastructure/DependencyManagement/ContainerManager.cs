@@ -12,17 +12,16 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
     public class ContainerManager
     {
         private readonly IContainer _container;
-        private readonly IServiceProvider _service;
         private ILifetimeScope _lifetime;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="container">Conainer</param>
         public ContainerManager(IContainer container
-            ,IServiceProvider service)
+            )
         {
             this._container = container;
-            this._service = service;
+            //this._service = service;
         }
 
         /// <summary>
@@ -45,8 +44,6 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <returns>Resolved service</returns>
         public virtual T Resolve<T>(string key = "", ILifetimeScope scope = null) where T : class
         {
-            var a = _service.GetService(typeof(T));
-            return (T)a;
             if (scope == null)
             {
                 //no scope specified
@@ -67,9 +64,6 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <returns>Resolved service</returns>
         public virtual object Resolve(Type type, ILifetimeScope scope = null)
         {
-            var tp= type.GetType(); 
-            var t = _service.GetService(type);
-
             if (scope == null)
             {
                 //no scope specified

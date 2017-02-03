@@ -1,0 +1,10 @@
+﻿@using Sus.Base.Framework.UI
+@{
+    Layout = "_core";
+    Html.AddCssFileParts(ResourceLocation.HeadMandatory, "~/assets/global/plugins/opensans.css");
+    Html.AddCssFileParts(ResourceLocation.HeadMandatory, "~/assets/global/plugins/font-awesome/css/font-awesome.min.css");
+    Html.AddCssFileParts(ResourceLocation.HeadMandatory, "~/assets/global/plugins/simple-line-icons/simple-line-icons.min.css");
+    Html.AddCssFileParts(ResourceLocation.HeadMandatory, "~/assets/global/plugins/bootstrap/css/bootstrap.min.css");
+    Html.AddCssFileParts(ResourceLocation.HeadMandatory, "~/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css");
+}
+@RenderBody()

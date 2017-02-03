@@ -13,7 +13,15 @@ namespace Sus.Base.Data
     {
         private readonly IDbContext _context;
         private DbSet<T> _entities;
-        private IDbContextTransaction _trans;
+        private IDbContextTransaction _trans
+        {
+            get
+            {
+                if (_context == null)
+                    return null;
+                return _context.db().CurrentTransaction;
+            }
+        }
 
         public SusRepository(IDbContext context)
         {
@@ -66,7 +74,7 @@ namespace Sus.Base.Data
                 
         }
 
-        public void Delete(IEnumerable<T> entities)
+        public int Delete(IEnumerable<T> entities)
         {
             try
             {
@@ -76,7 +84,8 @@ namespace Sus.Base.Data
                 foreach (var entity in entities)
                     this.Entities.Remove(entity);
                 if (_trans == null)
-                    this._context.SaveChanges();
+                    return this._context.SaveChanges();
+                return 0;
             }
             catch 
             {
@@ -84,7 +93,7 @@ namespace Sus.Base.Data
             }
         }
 
-        public void Delete(T entity)
+        public int Delete(T entity)
         {
             try
             {
@@ -93,7 +102,8 @@ namespace Sus.Base.Data
 
                 this.Entities.Remove(entity);
                 if (_trans == null)
-                    this._context.SaveChanges();
+                    return this._context.SaveChanges();
+                return 0;
             }
             catch 
             {
@@ -106,7 +116,7 @@ namespace Sus.Base.Data
             return this.Entities.Find(id);
         }
 
-        public void Insert(IEnumerable<T> entities)
+        public int Insert(IEnumerable<T> entities)
         {
             try
             {
@@ -116,7 +126,8 @@ namespace Sus.Base.Data
                 foreach (var entity in entities)
                     this.Entities.Add(entity);
                 if (_trans == null)
-                    this._context.SaveChanges();
+                    return this._context.SaveChanges();
+                return 0;
             }
             catch 
             {
@@ -124,7 +135,7 @@ namespace Sus.Base.Data
             }
         }
 
-        public void Insert(T entity)
+        public int Insert(T entity)
         {
             try
             {
@@ -133,7 +144,8 @@ namespace Sus.Base.Data
 
                 this.Entities.Add(entity);
                 if (_trans == null)
-                    this._context.SaveChanges();
+                    return this._context.SaveChanges();
+                return 0;
             }
             catch 
             {
@@ -151,14 +163,15 @@ namespace Sus.Base.Data
                 
         }
 
-        public void Update(IEnumerable<T> entities)
+        public int Update(IEnumerable<T> entities)
         {
             try
             {
                 if (entities == null)
                     throw new ArgumentNullException("entity");
                 if (_trans == null)
-                    this._context.SaveChanges();
+                    return this._context.SaveChanges();
+                return 0;
             }
             catch 
             {
@@ -166,14 +179,15 @@ namespace Sus.Base.Data
             }
         }
 
-        public void Update(T entity)
+        public int Update(T entity)
         {
             try
             {
                 if (entity == null)
                     throw new ArgumentNullException("entity");
                 if (_trans == null)
-                    this._context.SaveChanges();
+                    return this._context.SaveChanges();
+                return 0;
             }
             catch 
             {
@@ -185,7 +199,7 @@ namespace Sus.Base.Data
         {
             if (_trans != null)
                 return;
-            _trans = _context.BeginTrans();
+            _context.BeginTrans();
         }
     }
 }

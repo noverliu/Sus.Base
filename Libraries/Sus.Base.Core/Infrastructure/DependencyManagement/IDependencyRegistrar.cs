@@ -16,7 +16,7 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         /// <param name="builder">Container builder</param>
         /// <param name="typeFinder">Type finder</param>
         /// <param name="config">Config</param>
-        void Register(IServiceCollection services, ITypeFinder typeFinder, IServiceProvider sp, AppConfig config);
+        void Register(ContainerBuilder builder, ITypeFinder typeFinder, IServiceProvider sp, AppConfig config);
 
         /// <summary>
         /// Order of this dependency registrar implementation

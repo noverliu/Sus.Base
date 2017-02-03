@@ -14,7 +14,7 @@ namespace Sus.Base.Core.Infrastructure
         /// <summary>
         /// Container manager
         /// </summary>
-        IContainer Container { get; }
+        ContainerManager Container { get; }
 
         /// <summary>
         /// Initialize components and plugins in the nop environment.

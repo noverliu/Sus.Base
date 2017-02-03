@@ -13,7 +13,7 @@ namespace Sus.Base.Core
         public static IHostingEnvironment _env { get; set; }
         public static string MapPath(string path)
         {
-            //_env = StaticResolver.Resolve<IHostingEnvironment>();
+            _env = StaticResolver.Resolve<IHostingEnvironment>();
             string baseDirectory = _env.ContentRootPath;
             string webDir = _env.WebRootPath;
             //string basePath = Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationBasePath;

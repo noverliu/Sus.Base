@@ -7,11 +7,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Sus.Base.Data.Mapping.User
 {
-    public class UserUserRoleMapMapping : IEntityTypeConfiguration<User_UserRole_Map>
+    public class UserUserRoleMapMapping : EntityTypeConfiguration<User_UserRole_Map>
     {
-        public void Map(EntityTypeBuilder<User_UserRole_Map> builder)
+        public override void Map(EntityTypeBuilder<User_UserRole_Map> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.HasOne(x => x.User).WithMany(x => x.RolesMap).HasForeignKey(x => x.UserId);
+            builder.HasOne(x => x.Role).WithMany(x => x.UserMaps).HasForeignKey(x => x.UserRoleId);
         }
     }
 }
