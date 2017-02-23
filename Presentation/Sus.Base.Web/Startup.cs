@@ -18,6 +18,8 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Sus.Base.Core.Infrastructure.DependencyManagement;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Sus.Base.Framework.Theme;
 
 namespace Sus.Base.Web
 {
@@ -45,15 +47,19 @@ namespace Sus.Base.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            CommonHelper._env = _env;
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddOptions();
             services.AddAuthorization();
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<AppConfig>(Configuration.GetSection("AppConfig"));
+            services.Configure<RazorViewEngineOptions>(options => {
+                options.ViewLocationExpanders.Add(new ThemeViewLocationExpander());
+            });
             services.AddSingleton(_env);
             services.AddMvc();
-            StaticResolver.Config(services.BuildServiceProvider());
+            //StaticResolver.Config(services.BuildServiceProvider());
             EngineContext.Initialize(false,services);
             //this.ApplicationContainer = container;
             return new AutofacServiceProvider(EngineContext.Current.Container.Container);
@@ -87,7 +93,7 @@ namespace Sus.Base.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            
             app.UseApplicationInsightsExceptionTelemetry();
             app.UseStaticFiles();
             //app.Use(new Func<RequestDelegate, RequestDelegate>(nextapp => new ContainerMiddleware(nextapp,app.ApplicationServices)))
