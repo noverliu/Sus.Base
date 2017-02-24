@@ -17,7 +17,8 @@
     "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
     "Microsoft.Extensions.Caching.Memory": "1.1.0",
     "StackExchange.Redis": "1.2.0",
-    "Microsoft.AspNetCore.Http": "1.1.0"
+    "Microsoft.AspNetCore.Http": "1.1.0",
+    "microsoft.aspnetcore.routing.abstractions": "1.0.2"
   },
 
   "frameworks": {

@@ -20,6 +20,7 @@ using Sus.Base.Core.Infrastructure.DependencyManagement;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Sus.Base.Framework.Theme;
+using Microsoft.AspNetCore.Routing;
 
 namespace Sus.Base.Web
 {
@@ -93,7 +94,7 @@ namespace Sus.Base.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            
+
             app.UseApplicationInsightsExceptionTelemetry();
             app.UseStaticFiles();
             //app.Use(new Func<RequestDelegate, RequestDelegate>(nextapp => new ContainerMiddleware(nextapp,app.ApplicationServices)))
@@ -101,9 +102,12 @@ namespace Sus.Base.Web
             {
                 var rp= service.GetService<IRoutePublisher>();
                 rp.RegisterRoutes(routes);
+                routes.MapGet("{blog}/{controller}/{action}/id?", context => {
+                    
+                });
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{Host=Admin}/{controller=Home}/{action=Index}/{id?}");
             });
             //appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }

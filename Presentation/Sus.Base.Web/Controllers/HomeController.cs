@@ -12,6 +12,7 @@ namespace Sus.Base.Web.Controllers
     {
         public IActionResult Index()
         {
+            HttpContext.
             return View();
         }
 

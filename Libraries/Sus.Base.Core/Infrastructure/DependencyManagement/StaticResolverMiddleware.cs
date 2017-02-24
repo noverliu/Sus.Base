@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 
 namespace Sus.Base.Core.Infrastructure.DependencyManagement
 {
@@ -15,6 +16,7 @@ namespace Sus.Base.Core.Infrastructure.DependencyManagement
         }
         public async Task Invoke(HttpContext context)
         {
+            //创建新的Scope
             EngineContext.Current.CreateScope();
             await _next.Invoke(context);
         }
