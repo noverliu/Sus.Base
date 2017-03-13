@@ -1,32 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3CC9644A-7E3A-438B-8880-A3BBE782DF4E}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{7D56A5F2-95F2-4075-93C5-48820DC940C1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{A205FF4A-2DEE-4E8F-AD88-2CEE5F2955F2}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.Core", "Libraries\Sus.Base.Core\Sus.Base.Core.xproj", "{2062C7A3-1F54-4C5A-AF0E-0614908C13D8}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.Data", "Libraries\Sus.Base.Data\Sus.Base.Data.xproj", "{89D48C5A-D731-429B-A687-300EA1E7D676}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.Web", "Presentation\Sus.Base.Web\Sus.Base.Web.xproj", "{9472A4E0-373A-4DE8-A294-DD49808843DA}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.Framework", "Presentation\Sus.Base.Framework\Sus.Base.Framework.xproj", "{E53C1CC8-288A-4DB8-B011-985E79A5F5CD}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.WebAPI", "Presentation\Sus.Base.WebAPI\Sus.Base.WebAPI.xproj", "{D109D51C-5487-466D-B3CF-8CCF5E5DAE46}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{BC026CBA-0F2C-43B9-B8C1-B502A266620C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.Services", "Libraries\Sus.Base.Services\Sus.Base.Services.xproj", "{12F5F746-2725-45BD-A1C4-FC34CE329AAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.Core", "Libraries\Sus.Base.Core\Sus.Base.Core.csproj", "{2062C7A3-1F54-4C5A-AF0E-0614908C13D8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sus.Base.General", "Libraries\Sus.Base.General\Sus.Base.General.xproj", "{02B83385-9E0E-48F1-9B12-58BF67B76C71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.Data", "Libraries\Sus.Base.Data\Sus.Base.Data.csproj", "{89D48C5A-D731-429B-A687-300EA1E7D676}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.Web", "Presentation\Sus.Base.Web\Sus.Base.Web.csproj", "{9472A4E0-373A-4DE8-A294-DD49808843DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.Framework", "Presentation\Sus.Base.Framework\Sus.Base.Framework.csproj", "{E53C1CC8-288A-4DB8-B011-985E79A5F5CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.WebAPI", "Presentation\Sus.Base.WebAPI\Sus.Base.WebAPI.csproj", "{D109D51C-5487-466D-B3CF-8CCF5E5DAE46}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.Services", "Libraries\Sus.Base.Services\Sus.Base.Services.csproj", "{12F5F746-2725-45BD-A1C4-FC34CE329AAB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sus.Base.General", "Libraries\Sus.Base.General\Sus.Base.General.csproj", "{02B83385-9E0E-48F1-9B12-58BF67B76C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,7 +11,7 @@ namespace Sus.Base.Framework
     {
         public string CurrentBlog()
         {
-            return 
+            throw new NotImplementedException();
         }
     }
 }

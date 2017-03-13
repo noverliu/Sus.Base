@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>Sus.Base.Framework</AssemblyName>
+    <PackageId>Sus.Base.Framework</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Sus.Base.Core\Sus.Base.Core.csproj" />
+    <ProjectReference Include="..\..\Libraries\Sus.Base.Data\Sus.Base.Data.csproj" />
+    <ProjectReference Include="..\..\Libraries\Sus.Base.General\Sus.Base.General.csproj" />
+    <ProjectReference Include="..\..\Libraries\Sus.Base.Services\Sus.Base.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="1.0.2" />
+  </ItemGroup>
+
+</Project>
